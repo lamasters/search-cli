@@ -6,4 +6,4 @@ This is a simple command-line tool written in C++ that recursively searches a di
 
 To use the search tool, simply run the executable as follows:
 
-`search [file/directory] [substring]`
+`search file/directory substring [max_depth]`

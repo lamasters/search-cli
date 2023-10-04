@@ -77,7 +77,7 @@ bool search_file(string file_path, string search_string)
  * @param search_string The string to search for in the files.
  * @return true if a file containing the search string is found, false otherwise.
  */
-bool search_dir(string file_path, string search_string)
+bool search_dir(string file_path, string search_string, int depth, int max_depth)
 {
 	string sub_path;
 	file_result sub_result;
@@ -88,8 +88,8 @@ bool search_dir(string file_path, string search_string)
 		sub_result = check_file((char *)sub_path.c_str());
 		if (!sub_result.success)
 			continue;
-		if (sub_result.type == 0)
-			success = search_dir(sub_path, search_string) || success;
+		if (sub_result.type == 0 && depth < max_depth)
+			success = search_dir(sub_path, search_string, depth + 1, max_depth) || success;
 		else if (sub_result.type == 1)
 			success = search_file(sub_path, search_string) || success;
 	}
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 {
 	if (argc < 3)
 	{
-		cout << "Usage: search [file path] [search string]" << endl;
+		cout << "Usage: search file_path search_string [max_depth]" << endl;
 		return -1;
 	}
 
@@ -118,9 +118,20 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
+	int max_depth = 2;
+	if (argc == 4)
+	{
+		max_depth = atoi(argv[3]);
+		if (max_depth < 0)
+		{
+			cout << "Invalid max_depth" << endl;
+			return -1;
+		}
+	}
+
 	int search_result = 0;
 	if (file_type.type == 0)
-		search_result = search_dir(argv[1], argv[2]);
+		search_result = search_dir(argv[1], argv[2], 0, max_depth);
 	else if (file_type.type == 1)
 		search_result = search_file(argv[1], argv[2]);
 
